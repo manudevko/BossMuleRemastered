@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="./src/output.css" rel="stylesheet">
+    <title>Boss Mule Helper</title>
+  </head>
+  <body class="bg-gray-950">
+    <div class="bg-maple h-screen w-screen"></div>
+    <!-- CREATE CHARACTERS POPUP -->
+    <div
+      id="create-characters-popup"
+      class="hidden text-sm bg-custom-gray border border-gray-600 rounded absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[95%] xl:w-1/3 z-50"
+    >
+      <form
+        id="character-form"
+        class="bg-custom-gray flex flex-col justify-center flex-wrap gap-y-6 p-8 overflow-y-scroll"
+        action="#"
+      >
+        <div class="name flex justify-around pl-5 pr-8 xl:pr-24 xl:pl-20">
+          <label class="text-white" for="Name">IGN:</label>
+          <input class="w-1/2" type="text" name="Name" id="name" />
+        </div>
+        <h2 class="text-white text-center">Select Bosses:</h2>
+        <div
+          class="flex flex-wrap justify-center text-white gap-x-6 gap-y-6 max-h-96 overflow-y-scroll"
+          id="bossesPopup"
+        >
+          <div
+            value="CygnusE"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/cygnus.webp" />
+            <p class="w-24 text-center text-sm">Easy</p>
+          </div>
+          <div
+            value="Hilla"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/hilla.webp" />
+            <p class="w-24 text-center">Hard</p>
+          </div>
+          <div
+            value="Pinkbean"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/pb.webp" />
+            <p class="w-24 text-center">Chaos</p>
+          </div>
+          <div
+            value="CygnusN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/cygnus.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="Zakum"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/zakum.webp" />
+            <p class="w-24 text-center text-sm">Chaos</p>
+          </div>
+          <div
+            value="Queen"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/queen.webp" />
+            <p class="w-24 text-center">Chaos</p>
+          </div>
+          <div
+            value="Pierre"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/pierre.webp" />
+            <p class="w-24 text-center">Chaos</p>
+          </div>
+          <div
+            value="Vonbon"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/vonbon.webp" />
+            <p class="w-24 text-center">Chaos</p>
+          </div>
+          <div
+            value="Pno"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/pno.webp" />
+            <p class="w-24 text-center text-sm">Normal</p>
+          </div>
+          <div
+            value="Magnus"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/magnus.webp" />
+            <p class="w-24 text-center">Hard</p>
+          </div>
+          <div
+            value="Vellum"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/vellum.webp" />
+            <p class="w-24 text-center">Chaos</p>
+          </div>
+          <div
+            value="Papulatus"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/pap.webp" />
+            <p class="w-24 text-center">Chaos</p>
+          </div>
+          <div
+            value="Akechi"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/akechi.webp" />
+            <p class="w-24 text-center text-sm">Normal</p>
+          </div>
+          <div
+            value="LotusN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/lotus.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="DamienN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/damien.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="SlimeN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/slime.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="LucidE"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/lucid.webp" />
+            <p class="w-24 text-center text-sm">Easy</p>
+          </div>
+          <div
+            value="WillE"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/will.webp" />
+            <p class="w-24 text-center">Easy</p>
+          </div>
+          <div
+            value="LucidN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/lucid.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="WillN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/will.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="GloomN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/gloom.webp" />
+            <p class="w-24 text-center text-sm">Normal</p>
+          </div>
+          <div
+            value="DarknellN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/darknell.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="DamienH"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/damien.webp" />
+            <p class="w-24 text-center">Hard</p>
+          </div>
+          <div
+            value="LotusH"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/lotus.webp" />
+            <p class="w-24 text-center">Hard</p>
+          </div>
+          <div
+            value="LucidH"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/lucid.webp" />
+            <p class="w-24 text-center text-sm">Hard</p>
+          </div>
+          <div
+            value="WillH"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/will.webp" />
+            <p class="w-24 text-center">Hard</p>
+          </div>
+          <div
+            value="VhillaN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/vhilla.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="SlimeC"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/slime.webp" />
+            <p class="w-24 text-center">Chaos</p>
+          </div>
+          <div
+            value="GloomC"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/gloom.webp" />
+            <p class="w-24 text-center text-sm">Chaos</p>
+          </div>
+          <div
+            value="DarknellH"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/darknell.webp" />
+            <p class="w-24 text-center">Hard</p>
+          </div>
+          <div
+            value="VhillaH"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/vhilla.webp" />
+            <p class="w-24 text-center">Hard</p>
+          </div>
+          <div
+            value="SerenN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/seren.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="KalosE"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/kalos.webp" />
+            <p class="w-24 text-center">Easy</p>
+          </div>
+          <div
+            value="SerenH"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/seren.webp" />
+            <p class="w-24 text-center">Hard</p>
+          </div>
+          <div
+            value="KalingE"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/kaling.webp" />
+            <p class="w-24 text-center">Easy</p>
+          </div>
+          <div
+            value="KalosN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/kalos.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="KalingN"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/kaling.webp" />
+            <p class="w-24 text-center">Normal</p>
+          </div>
+          <div
+            value="KalosC"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/kalos.webp" />
+            <p class="w-24 text-center">Chaos</p>
+          </div>
+          <div
+            value="KalingH"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/kaling.webp" />
+            <p class="w-24 text-center">Hard</p>
+          </div>
+          <div
+            value="BlackmageH"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/blackmage.webp" />
+            <p class="w-24 text-center">Hard</p>
+          </div>
+          <div
+            value="SerenEx"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/seren.webp" />
+            <p class="w-24 text-center">Extreme</p>
+          </div>
+          <div
+            value="KalosEx"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/kalos.webp" />
+            <p class="w-24 text-center">Extreme</p>
+          </div>
+          <div
+            value="KalingEx"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/kaling.webp" />
+            <p class="w-24 text-center">Extreme</p>
+          </div>
+          <div
+            value="BlackmageEx"
+            class="boss flex flex-col items-center border rounded grayscale hover:grayscale-0"
+          >
+            <img class="w-24" src="./assets/blackmage.webp" />
+            <p class="w-24 text-center">Extreme</p>
+          </div>
+        </div>
+        <input
+          id="submit-char"
+          class="text-1xl bg-green-600 rounded p-2 text-white w-1/4 m-auto cursor-pointer"
+          type="submit"
+          value="Create"
+        />
+      </form>
+    </div>
+    <!-- MAIN CONTENT -->
+    <main id="content">
+      <!-- HEADER -->
+      <header id="header" class="mb-10">
+        <div class="flex flex-col pt-5 md:pt-0 md:flex-row justify-center items-center w-full bg-custom-gray md:gap-x-60">
+          <h1
+          class="sr-only text-2xl md:text-2xl uppercase text-white text-center font-bold"
+        >
+          Boss mules helper
+        </h1>
+        <img class="w-[250px]" src="assets/header.png" alt="">
+        <div class="">
+          <!-- CREATE AND EDIT CHARACTERS BUTTONS -->
+          <section
+            id="button"
+            class="text-white flex flex-row flex-wrap justify-center gap-y-4 gap-x-6 my-10"
+          >
+            <button
+              class="bg-green-600 text-sm text-center rounded hover:bg-green-800"
+              id="create-character"
+            >
+              <div class="flex justify-center items-center gap-x-2 p-2">
+                <i
+                  ><img class="h-3.5" src="assets/icons/plusw.webp" alt=""
+                /></i>
+                <p>Create Character</p>
+              </div>
+            </button>
+          </section>
+        </div>
+      </header>
+      <div class="flex flex-col justify-center gap-y-24">
+        <!-- CHARACTERS WRAPPER -->
+        <section
+          id="characters"
+          class="flex flex-row flex-wrap justify-center items-start gap-x-12 gap-y-14 overflow-x-hidden"
+        ></section>
+          <!-- MESOS AND CRYSTALS -->
+          <section
+          id="currency"
+          class="flex flex-col md:flex-row flex-wrap gap-y-5 text-white text-1xl text-center justify-center items-center mb-10"
+        > 
+        <div class="flex flex-col gap-y-6 w-2/12">
+         <img class="h-auto w-24 m-auto" class="" src="assets/NPC_Eggrich.webp" alt="" />
+         <hr>
+         <div class="flex flex-row justify-center gap-x-2 items-center">
+           <img class="h-9 w-9" class="" src="assets/meso.png" alt="" />
+           <p><span id="total-mesos">0</span></p>
+         </div>
+        </div>
+        <div class="flex flex-col gap-y-6 w-2/12">
+         <img class="h-auto w-24 m-auto" class="" src="assets/NPC_Collector.webp" alt="" />
+         <hr>
+         <div class="flex flex-row justify-center gap-x-2 items-center">
+           <img class="h-9 w-9" class="" src="assets/crystal.webp" alt="" />
+           <span id="total-crystals">180</span>
+         </div>
+        </div> 
+          </section>
+      </div>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
