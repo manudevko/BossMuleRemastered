@@ -336,7 +336,9 @@ const createChar = (charName, bossesDefeated) => {
   const charFinishedLabel = document.createElement('label');
   const charFinishedButton = document.createElement('div');
   const charFinishedText = document.createElement('span');
-  const editCharacterButton = document.createElement('button');
+  const editCharacterButton = document.createElement('div');
+  const editCharacterButtonIcon = document.createElement('img');
+  const editCharacterButtonText = document.createElement('p');
   let totalCharMesosGenerated = 0;
   let borderBottom = true;
   const charInfo = {
@@ -433,7 +435,20 @@ const createChar = (charName, bossesDefeated) => {
     'text-gray-500'
   );
 
-  editCharacterButton.classList.add('bg-blue-500', 'cursor-pointer');
+  editCharacterButton.classList.add(
+    'flex',
+    'justify-center',
+    'items-center',
+    'text-sm',
+    'bg-blue-500',
+    'cursor-pointer',
+    'px-4',
+    'py-2',
+    'rounded',
+    'gap-2'
+  );
+
+  editCharacterButtonIcon.classList.add('h-3.5');
 
   //Retreiving data and adding onto the character and boss table.
 
@@ -443,7 +458,8 @@ const createChar = (charName, bossesDefeated) => {
   bTheadParty.innerText = 'Party';
   bTHeadMesos.innerText = 'Mesos';
   charFinishedText.innerText = 'Unfinished';
-  editCharacterButton.innerText = 'Edit character';
+  editCharacterButtonText.innerText = 'Edit character';
+  editCharacterButtonIcon.src = 'assets/icons/settingsw.webp';
 
   //Counting for figuring out if it's the last boss, if so the Tr SHOULDN'T have a border bottom.
   const bossCount = Object.keys(bossesDefeated).length;
@@ -487,13 +503,16 @@ const createChar = (charName, bossesDefeated) => {
   //Character finished button
   charFinishedLabel.appendChild(charFinishedButton);
   charFinishedLabel.appendChild(charFinishedText);
+  //Character edit button
+  editCharacterButton.appendChild(editCharacterButtonIcon);
+  editCharacterButton.appendChild(editCharacterButtonText);
   //Charinfo
   charInfoWrapper.appendChild(charImg);
   charInfoWrapper.appendChild(charIGN);
+  charInfoWrapper.appendChild(editCharacterButton);
   charInfoWrapper.appendChild(charHr);
   charInfoWrapper.appendChild(charMesosGenerated);
   charInfoWrapper.appendChild(charFinishedLabel);
-  charInfoWrapper.appendChild(editCharacterButton);
   //Table head
   bTableHead.appendChild(bTHeadTr);
   bossTable.appendChild(bTableHead);
