@@ -328,6 +328,7 @@ const createChar = (charName, bossesDefeated) => {
   const charInfo = {
     charHTML: '',
     charIGN: charName,
+    charTotalMesos: 0,
     bossesDefeated: [],
   };
 
@@ -345,6 +346,7 @@ const createChar = (charName, bossesDefeated) => {
   );
 
   charMesosGenerated.classList.add('char-mesos');
+  charMesosGenerated.id = `${charName}mesos`;
 
   charImg.classList.add('h-16', 'ms-avatar');
 
@@ -493,6 +495,7 @@ const createChar = (charName, bossesDefeated) => {
   charMesosGenerated.innerText = `Mesos generated: ${parseInt(
     totalCharMesosGenerated
   ).toLocaleString('en-US')}`;
+  charInfo.charTotalMesos = totalCharMesosGenerated;
 
   //Appending everything together
   //Character finished button
@@ -786,10 +789,8 @@ const updatePartyMesos = () => {
         e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.children[0].children[1].innerText.split(
           'IGN: '
         )[1];
-      const currentCharInfo = JSON.parse(localStorage.getItem(charIGN));
-      const charMesosGenerated =
-        e.target.parentElement.parentElement.parentElement.parentElement
-          .parentElement.parentElement.children[0].children[3];
+      const currentCharLocalStorage = JSON.parse(localStorage.getItem(charIGN));
+      const charMesosGenerated = document.querySelector(`#${charIGN}mesos`);
       const partyValue = e.target.value;
       const partyValueAttribute = e.target.attributes.value;
       partyValueAttribute.value = partyValue;
@@ -800,7 +801,7 @@ const updatePartyMesos = () => {
         e.target.parentElement.parentElement.previousSibling.previousSibling
           .children[0].children[0].alt;
 
-      for (const boss of currentCharInfo.bossesDefeated) {
+      for (const boss of currentCharLocalStorage.bossesDefeated) {
         if (
           bossName.toLowerCase() === boss.name.toLowerCase() &&
           bossDifficulty.toLowerCase() === boss.difficulty.toLowerCase()
@@ -808,7 +809,7 @@ const updatePartyMesos = () => {
           const newMeso = boss.soloMeso / partyValue;
           boss.actualMeso = newMeso;
           let newTotalCharMeso = 0;
-          for (const boss of currentCharInfo.bossesDefeated) {
+          for (const boss of currentCharLocalStorage.bossesDefeated) {
             newTotalCharMeso += boss.actualMeso;
           }
           //Updates the DOM with the new meso
@@ -818,8 +819,12 @@ const updatePartyMesos = () => {
           ).toLocaleString('en-US')}`;
           updateCurrency();
           //Updates localstorage as well
-          currentCharInfo.charHTML = mainHTML.outerHTML;
-          localStorage.setItem(charIGN, JSON.stringify(currentCharInfo));
+          currentCharLocalStorage.charTotalMesos = newTotalCharMeso;
+          currentCharLocalStorage.charHTML = mainHTML.outerHTML;
+          localStorage.setItem(
+            charIGN,
+            JSON.stringify(currentCharLocalStorage)
+          );
         }
       }
     });
@@ -858,6 +863,7 @@ const editCharacter = (target) => {
     target.currentTarget.parentElement.children[1].children[0].textContent.split(
       'IGN: '
     )[1];
+  let localStorageCrystals = JSON.parse(localStorage.getItem('Crystals'));
   const charLocalStorage = JSON.parse(localStorage.getItem(charIGN));
   const charLocalStorageHTML = document.createElement('div');
   charLocalStorageHTML.innerHTML = charLocalStorage.charHTML;
@@ -894,6 +900,7 @@ const editCharacter = (target) => {
 
     //Edit logic and UI changes
 
+    //Changes bosses table to edit mode
     charDOMHTML.children[1].innerHTML = `
     <table class="text-center block bg-custom-gray border-2 overflow-x-scroll border-gray-600 rounded overflow-y-scroll">
      <tbody class="flex flex-col text-xs w-max xl:text-sm tbodychar bg-gray-800 p-4">
@@ -901,43 +908,78 @@ const editCharacter = (target) => {
   </table>`;
     editBossTrs.forEach((bossTr) => {
       const bossDeleteButton = bossTr.children[2].children[0];
+      //Adds event listener to each boss delete button
       bossDeleteButton.addEventListener('click', function (e) {
+        //Boss name and difficulty being targeted
         const bossName =
           e.currentTarget.parentElement.parentElement.children[0].children[0]
             .children[0].alt;
         const bossDifficulty =
           e.currentTarget.parentElement.parentElement.children[1].children[0]
             .innerText;
+        const totalMesosEditMode =
+          e.currentTarget.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector(
+            `#${charIGN}mesos`
+          );
+        //Bosses from localstorage HTML
+        const charBossesLocalStorage =
+          charLocalStorageHTML.children[0].children[1].children[1].childNodes;
 
+        //Get rids of the boss in localstorage bosses defeated array and updates the total char mesos
         charLocalStorage.bossesDefeated.forEach((boss, i) => {
           if (
             bossName.toUpperCase() === boss.name.toUpperCase() &&
             bossDifficulty.toUpperCase() === boss.difficulty.toUpperCase()
           ) {
+            charLocalStorage.charTotalMesos -= boss.actualMeso;
             charLocalStorage.bossesDefeated.splice(i, 1);
           }
         });
-        charLocalStorageHTML.children[0].children[1].children[1].childNodes.forEach(
-          (children) => {
-            const bossNameLocalStorageHTML =
-              children.children[0].children[0].children[0].alt;
-            const bossDifficultyLocalStorageHTML =
-              children.children[1].innerText;
-            if (
-              bossName.toUpperCase() ===
-                bossNameLocalStorageHTML.toUpperCase() &&
-              bossDifficulty.toUpperCase() ==
-                bossDifficultyLocalStorageHTML.toUpperCase()
-            ) {
-              children.remove();
-              charLocalStorage.charHTML =
-                charLocalStorageHTML.children[0].outerHTML;
+        //Get rids of the boss in localstorage ORIGINAL char HTML
+        charBossesLocalStorage.forEach((children) => {
+          const bossNameLocalStorageHTML =
+            children.children[0].children[0].children[0].alt;
+          const bossDifficultyLocalStorageHTML = children.children[1].innerText;
+          const charTotalMesosLocalStorageHTML =
+            children.parentElement.parentElement.parentElement.querySelector(
+              `#${charIGN}mesos`
+            );
+          if (
+            bossName.toUpperCase() === bossNameLocalStorageHTML.toUpperCase() &&
+            bossDifficulty.toUpperCase() ==
+              bossDifficultyLocalStorageHTML.toUpperCase()
+          ) {
+            //If we are deleting the last boss element from the table we have to remove the border-b from the previous sibling because
+            //it is going to become the last element
+            if (!children.nextSibling) {
+              children.previousSibling.classList.remove('border-b');
             }
+            //Removes the boss from the edit table
+            e.currentTarget.parentElement.parentElement.remove();
+            //Removes the boss from the ORIGINAL localstorage HTML
+            children.remove();
+            //Updates the EDIT mode total mesos
+            totalMesosEditMode.innerText = `Mesos generated: ${charLocalStorage.charTotalMesos.toLocaleString(
+              'en-US'
+            )}`;
+            //Updates the ORIGINAL localstorage total mesos
+            charTotalMesosLocalStorageHTML.innerText = `Mesos generated: ${charLocalStorage.charTotalMesos.toLocaleString(
+              'en-US'
+            )}`;
+            //Updates the ORIGINAL localstorage crystals
+            localStorageCrystals++;
+            charLocalStorage.charHTML =
+              charLocalStorageHTML.children[0].outerHTML;
           }
-        );
-        console.log(charLocalStorage);
+        });
+        localStorage.setItem('Crystals', JSON.stringify(localStorageCrystals));
+        global.availableCrystals = `${parseFloat(
+          localStorage.getItem('Crystals')
+        )}`;
+        updateCurrency();
         localStorage.setItem(charIGN, JSON.stringify(charLocalStorage));
       });
+      //Adds the boss badge style & appends to boss table DOM HTML
       addBossBadge(bossTr.children[1].children[0], 'boss');
       bossTr.classList.add('py-2');
       charDOMHTML.children[1].children[0].appendChild(bossTr);
@@ -955,6 +997,7 @@ const editCharacter = (target) => {
       //Go back to before
       global.DOM.charactersSection.innerHTML = '';
       getLocalStorage();
+      appRender();
     }
   }
 };
