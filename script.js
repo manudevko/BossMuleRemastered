@@ -1032,20 +1032,22 @@ const getCharButtons = () => {
 //Gets data from localstorage if available at the beginning of the webapp.
 
 const getLocalStorage = () => {
-  //Retrieves all characters in localstorage and adds to DOM
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key !== 'Crystals') {
-      const localChar = document.createElement('div');
-      const char = JSON.parse(localStorage.getItem(key));
-      localChar.innerHTML = char.charHTML;
-      global.DOM.charactersSection.appendChild(localChar);
+  if (localStorage.length > 1) {
+    //Retrieves all characters in localstorage and adds to DOM
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key !== 'Crystals') {
+        const localChar = document.createElement('div');
+        const char = JSON.parse(localStorage.getItem(key));
+        localChar.innerHTML = char.charHTML;
+        global.DOM.charactersSection.appendChild(localChar);
+      }
     }
+
+    //Updates the character buttons selectors
+
+    getCharButtons();
   }
-
-  //Updates the character buttons selectors
-
-  getCharButtons();
 
   //Updates the available crystals
 
