@@ -16,12 +16,15 @@ const global = {
     },
     buttons: {
       createCharacterBtn: document.querySelector('#create-character'),
+      deleteCharacterButtons: null,
+      editCharacterButtons: null,
     },
     mainContent: document.querySelector('#content'),
     charactersSection: document.querySelector('#characters'),
     totalMesosWeb: document.querySelector('#total-mesos'),
     totalCrystals: document.querySelector('#total-crystals'),
   },
+  editing: false,
   charBosses: [],
   charIGN: '',
   availableCrystals: 180,
@@ -295,27 +298,6 @@ const global = {
 
 // ============= FUNCTIONS ============= //
 
-//Gets data from localstorage if available at the beginning of the webapp.
-
-const getLocalStorage = () => {
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key !== 'Crystals') {
-      const localChar = document.createElement('div');
-      const char = JSON.parse(localStorage.getItem(key));
-      localChar.innerHTML = char.charHTML;
-      global.DOM.charactersSection.appendChild(localChar);
-    }
-  }
-  if (localStorage.getItem('Crystals')) {
-    global.availableCrystals = `${parseFloat(
-      localStorage.getItem('Crystals')
-    )}`;
-  }
-};
-
-getLocalStorage();
-
 //Function used to create a new character including the bossesDefeated that week.
 const createChar = (charName, bossesDefeated) => {
   const charWrapper = document.createElement('div');
@@ -336,9 +318,11 @@ const createChar = (charName, bossesDefeated) => {
   const charFinishedLabel = document.createElement('label');
   const charFinishedButton = document.createElement('div');
   const charFinishedText = document.createElement('span');
+  const charManageButtons = document.createElement('div');
   const editCharacterButton = document.createElement('div');
   const editCharacterButtonIcon = document.createElement('img');
   const editCharacterButtonText = document.createElement('p');
+  const deleteCharacterButton = document.createElement('img');
   let totalCharMesosGenerated = 0;
   let borderBottom = true;
   const charInfo = {
@@ -435,6 +419,13 @@ const createChar = (charName, bossesDefeated) => {
     'text-gray-500'
   );
 
+  charManageButtons.classList.add(
+    'flex',
+    'gap-2',
+    'justify-center',
+    'items-center'
+  );
+
   editCharacterButton.classList.add(
     'flex',
     'justify-center',
@@ -445,10 +436,13 @@ const createChar = (charName, bossesDefeated) => {
     'px-4',
     'py-2',
     'rounded',
-    'gap-2'
+    'gap-2',
+    'edit-char'
   );
 
   editCharacterButtonIcon.classList.add('h-3.5');
+
+  deleteCharacterButton.classList.add('h-5', 'cursor-pointer', 'delete-char');
 
   //Retreiving data and adding onto the character and boss table.
 
@@ -460,6 +454,7 @@ const createChar = (charName, bossesDefeated) => {
   charFinishedText.innerText = 'Unfinished';
   editCharacterButtonText.innerText = 'Edit character';
   editCharacterButtonIcon.src = 'assets/icons/settingsw.webp';
+  deleteCharacterButton.src = 'assets/icons/delete.png';
 
   //Counting for figuring out if it's the last boss, if so the Tr SHOULDN'T have a border bottom.
   const bossCount = Object.keys(bossesDefeated).length;
@@ -506,9 +501,12 @@ const createChar = (charName, bossesDefeated) => {
   //Character edit button
   editCharacterButton.appendChild(editCharacterButtonIcon);
   editCharacterButton.appendChild(editCharacterButtonText);
+  //Manage char buttons div
+  charManageButtons.appendChild(charIGN);
+  charManageButtons.appendChild(deleteCharacterButton);
   //Charinfo
   charInfoWrapper.appendChild(charImg);
-  charInfoWrapper.appendChild(charIGN);
+  charInfoWrapper.appendChild(charManageButtons);
   charInfoWrapper.appendChild(editCharacterButton);
   charInfoWrapper.appendChild(charHr);
   charInfoWrapper.appendChild(charMesosGenerated);
@@ -828,12 +826,202 @@ const updatePartyMesos = () => {
   });
 };
 
+//Function that handles char deletion
+
+const deleteCharacter = (target) => {
+  const confirmation = confirm(
+    'Are you sure you want to delete the character?'
+  );
+
+  if (confirmation) {
+    //Gets char IGN from current target, adds back the crystals used by the character, deletes the character from localstorage and updates the DOM.
+    const charIGN =
+      target.currentTarget.parentElement.children[0].textContent.split(
+        'IGN: '
+      )[1];
+    const charLocalStorage = JSON.parse(localStorage.getItem(charIGN));
+    let crystalsLocalStorage = parseInt(localStorage.getItem('Crystals'));
+    crystalsLocalStorage += charLocalStorage.bossesDefeated.length;
+    localStorage.setItem('Crystals', JSON.stringify(crystalsLocalStorage));
+    localStorage.removeItem(charIGN);
+    global.DOM.charactersSection.innerHTML = '';
+    getLocalStorage();
+    appRender();
+  }
+};
+
+//Function that handles char edition
+
+const editCharacter = (target) => {
+  const targetButton = target.currentTarget;
+  const charIGN =
+    target.currentTarget.parentElement.children[1].children[0].textContent.split(
+      'IGN: '
+    )[1];
+  const charLocalStorage = JSON.parse(localStorage.getItem(charIGN));
+  const charLocalStorageHTML = document.createElement('div');
+  charLocalStorageHTML.innerHTML = charLocalStorage.charHTML;
+  const charDOMHTML = target.currentTarget.parentElement.parentElement;
+  const charLocalBosses = charLocalStorage.bossesDefeated;
+  const editBossTrs = [];
+
+  charLocalBosses.forEach((charboss) => {
+    const bossName = charboss.name;
+    const bossDifficulty = charboss.difficulty;
+    const bossIMG = charboss.IMG;
+    const trHTML = document.createElement('tr');
+    trHTML.innerHTML = `<tr class="bg-custom-gray py-8 flex justify-between items-center font-medium border-gray-600">
+    <td>
+       <div class="w-100px"><img src=${bossIMG} alt=${bossName} class="h-12 border rounded border-gray-500 mx-auto"></div>
+    </td>
+    <td>
+       <div class="bg-gray-500 py-1 px-3 rounded w-100px">${bossDifficulty}</div>
+    </td>
+    <td>
+     <div class="bg-red-500 py-1 px-3 rounded w-100px cursor-pointer delete-boss">Delete</div>
+    </td>
+ </tr>`;
+    editBossTrs.push(trHTML);
+  });
+
+  if (!global.editing) {
+    //Edit mode
+    targetButton.children[1].textContent = 'Done';
+    targetButton.children[0].classList.add('hidden');
+    targetButton.classList.remove('bg-blue-500');
+    targetButton.classList.add('bg-green-500');
+    global.editing = true;
+
+    //Edit logic and UI changes
+
+    charDOMHTML.children[1].innerHTML = `
+    <table class="text-center block bg-custom-gray border-2 overflow-x-scroll border-gray-600 rounded overflow-y-scroll">
+     <tbody class="flex flex-col text-xs w-max xl:text-sm tbodychar bg-gray-800 p-4">
+     </tbody>
+  </table>`;
+    editBossTrs.forEach((bossTr) => {
+      const bossDeleteButton = bossTr.children[2].children[0];
+      bossDeleteButton.addEventListener('click', function (e) {
+        const bossName =
+          e.currentTarget.parentElement.parentElement.children[0].children[0]
+            .children[0].alt;
+        const bossDifficulty =
+          e.currentTarget.parentElement.parentElement.children[1].children[0]
+            .innerText;
+
+        charLocalStorage.bossesDefeated.forEach((boss, i) => {
+          if (
+            bossName.toUpperCase() === boss.name.toUpperCase() &&
+            bossDifficulty.toUpperCase() === boss.difficulty.toUpperCase()
+          ) {
+            charLocalStorage.bossesDefeated.splice(i, 1);
+          }
+        });
+        charLocalStorageHTML.children[0].children[1].children[1].childNodes.forEach(
+          (children) => {
+            const bossNameLocalStorageHTML =
+              children.children[0].children[0].children[0].alt;
+            const bossDifficultyLocalStorageHTML =
+              children.children[1].innerText;
+            if (
+              bossName.toUpperCase() ===
+                bossNameLocalStorageHTML.toUpperCase() &&
+              bossDifficulty.toUpperCase() ==
+                bossDifficultyLocalStorageHTML.toUpperCase()
+            ) {
+              children.remove();
+              charLocalStorage.charHTML =
+                charLocalStorageHTML.children[0].outerHTML;
+            }
+          }
+        );
+        console.log(charLocalStorage);
+        localStorage.setItem(charIGN, JSON.stringify(charLocalStorage));
+      });
+      addBossBadge(bossTr.children[1].children[0], 'boss');
+      bossTr.classList.add('py-2');
+      charDOMHTML.children[1].children[0].appendChild(bossTr);
+    });
+  } else {
+    //Exits edit mode
+    const confirmation = confirm('Are you done editing?');
+    if (confirmation) {
+      targetButton.children[1].textContent = 'Edit character';
+      targetButton.children[0].classList.remove('hidden');
+      targetButton.classList.remove('bg-green-500');
+      targetButton.classList.add('bg-blue-500');
+      global.editing = false;
+
+      //Go back to before
+      global.DOM.charactersSection.innerHTML = '';
+      getLocalStorage();
+    }
+  }
+};
+
+//To be able to get/update the delete/edit buttons from characters whenever neccesary and adds event listeners.
+
+const getCharButtons = () => {
+  global.DOM.buttons.deleteCharacterButtons =
+    document.querySelectorAll('.delete-char');
+  global.DOM.buttons.editCharacterButtons =
+    document.querySelectorAll('.edit-char');
+
+  //Deletes char
+
+  global.DOM.buttons.deleteCharacterButtons.forEach((deleteCharacterButton) => {
+    //Adds listener if there's no listener already
+    if (deleteCharacterButton.getAttribute('listener') !== 'true') {
+      deleteCharacterButton.addEventListener('click', deleteCharacter);
+    }
+  });
+
+  //Edits char bosses
+
+  global.DOM.buttons.editCharacterButtons.forEach((editCharacterButton) => {
+    //Adds listener if there's no listener already
+    if (editCharacterButton.getAttribute('listener') !== 'true') {
+      editCharacterButton.addEventListener('click', editCharacter);
+    }
+  });
+};
+
+//Gets data from localstorage if available at the beginning of the webapp.
+
+const getLocalStorage = () => {
+  //Retrieves all characters in localstorage and adds to DOM
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key !== 'Crystals') {
+      const localChar = document.createElement('div');
+      const char = JSON.parse(localStorage.getItem(key));
+      localChar.innerHTML = char.charHTML;
+      global.DOM.charactersSection.appendChild(localChar);
+    }
+  }
+
+  //Updates the character buttons selectors
+
+  getCharButtons();
+
+  //Updates the available crystals
+
+  if (localStorage.getItem('Crystals')) {
+    global.availableCrystals = `${parseFloat(
+      localStorage.getItem('Crystals')
+    )}`;
+  }
+};
+
+getLocalStorage();
+
 //Initializing the app with the functions that are needed to be run at the beginning of the webapp.
 
 const appRender = () => {
   updateCurrency();
   updatePartyMesos();
   characterFinished();
+  getCharButtons();
   getCharIMGs();
 };
 
@@ -850,8 +1038,6 @@ global.DOM.buttons.createCharacterBtn.addEventListener('click', function () {
     addBossBadge(bossTag, 'form');
   });
 });
-
-//
 
 //Closes create character popup and unblurs the background
 
@@ -917,7 +1103,6 @@ global.DOM.popUps.createCharacterForm.submitCharBtn.addEventListener(
       localStorage.setItem(global.charIGN, JSON.stringify(char));
       localStorage.setItem('Crystals', global.availableCrystals);
       appRender();
-
       global.charBosses.length = 0;
       global.charIGN = '';
       filteredBosses.length = 0;
