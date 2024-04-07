@@ -1039,8 +1039,11 @@ const getLocalStorage = () => {
       if (key !== 'Crystals') {
         const localChar = document.createElement('div');
         const char = JSON.parse(localStorage.getItem(key));
-        localChar.innerHTML = char.charHTML;
-        global.DOM.charactersSection.appendChild(localChar);
+        //Checks if the localstorage char is an actual character and not something else.
+        if (char.charHTML) {
+          localChar.innerHTML = char.charHTML;
+          global.DOM.charactersSection.appendChild(localChar);
+        }
       }
     }
 
