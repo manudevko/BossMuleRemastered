@@ -877,7 +877,6 @@ const deleteBossFromEditMode = (
   //Bosses from localstorage HTML
   const charBossesLocalStorage =
     charLocalStorageHTML.children[0].children[1].children[1].childNodes;
-
   //Get rids of the boss in localstorage bosses defeated array and updates the total char mesos
   charLocalStorage.bossesDefeated.forEach((boss, i) => {
     if (
@@ -936,6 +935,7 @@ const deleteBossFromEditMode = (
 //Function that handles char edition
 
 const editCharacter = (target) => {
+  let localStorageCrystals = JSON.parse(localStorage.getItem('Crystals'));
   const targetButton = target.currentTarget;
   const charIGN =
     target.currentTarget.parentElement.children[1].children[0].textContent.split(
@@ -1056,23 +1056,26 @@ const editCharacter = (target) => {
       const bossName = selectBoss.value.split('-')[0].trim();
       const bossDifficulty = selectBoss.value.split('-')[1].trim();
       let bossIMG = '';
+      let bossMesos = 0;
       bossList.forEach(([key, boss]) => {
         if (bossName === boss.Name && bossDifficulty === boss.Difficulty) {
           bossIMG = boss.IMG;
+          bossMesos = boss.Price;
         }
       });
+      const newBossTR = document.createElement('tr');
       const trHTML = document.createElement('tr');
       trHTML.innerHTML = `<tr class="bg-custom-gray py-8 flex justify-between items-center font-medium border-gray-600">
         <td>
           <div class="w-100px"><img src=${bossIMG} alt=${bossName} class="h-12 border rounded border-gray-500 mx-auto"></div>
         </td>
         <td>
-          <div class="bg-gray-500 py-1 px-3 rounded w-100px">${bossDifficulty}</div>
+          <div class="rounded w-100px">${bossDifficulty}</div>
         </td>
         <td>
         <div class="bg-red-500 py-1 px-3 rounded w-100px cursor-pointer delete-boss">Delete</div>
         </td>
-    </tr>`;
+      </tr>`;
       const bossDeleteButton = trHTML.children[2].children[0];
       //Adds event listener to each boss delete button
       bossDeleteButton.addEventListener('click', (e) =>
@@ -1087,6 +1090,51 @@ const editCharacter = (target) => {
       addBossBadge(trHTML.children[1].children[0], 'boss');
       trHTML.classList.add('py-2');
       charDOMHTML.children[1].children[0].appendChild(trHTML);
+      //Removes the added boss from the selection list
+      selectBoss.remove(selectBoss.selectedIndex);
+      //Add boss to localstorage and update mesos and crystals as well as the main HTML
+      charLocalStorage.bossesDefeated.push({
+        name: bossName,
+        difficulty: bossDifficulty,
+        IMG: bossIMG,
+        soloMeso: bossMesos,
+        actualMeso: bossMesos,
+      });
+      const charBossTableLocalStorage =
+        charLocalStorageHTML.children[0].children[1].children[1];
+      newBossTR.innerHTML = `<tr class="bg-custom-gray py-8 flex justify-between items-center font-medium border-b border-gray-600">
+        <td><div class="w-100px"><img src="" alt="" class="h-12 border rounded border-gray-500 mx-auto"></div></td>
+        <td><div class="w-100px"></div></td>
+        <td><div class="w-100px"><input class="party-input w-1/2 bg-gray-700 text-center text-white font-bold rounded" type="number" min="1" max="6" value="1"></div></td>
+        <td><div class="w-100px"></div></td>
+      </tr>`;
+      newBossTR.classList.add(
+        'bg-custom-gray',
+        'py-8',
+        'flex',
+        'justify-between',
+        'items-center',
+        'font-medium'
+      );
+      charBossTableLocalStorage.lastElementChild.classList.add(
+        'border-b',
+        'border-gray-600'
+      );
+
+      newBossTR.children[0].children[0].children[0].src = bossIMG;
+      newBossTR.children[1].children[0].textContent = bossDifficulty;
+      addBossBadge(newBossTR.children[1].children[0], 'boss');
+      newBossTR.children[3].children[0].textContent =
+        bossMesos.toLocaleString('en-US');
+      charBossTableLocalStorage.appendChild(newBossTR);
+      charLocalStorage.charHTML = charLocalStorageHTML.children[0].outerHTML;
+      localStorageCrystals--;
+      localStorage.setItem('Crystals', JSON.stringify(localStorageCrystals));
+      global.availableCrystals = `${parseFloat(
+        localStorage.getItem('Crystals')
+      )}`;
+      updateCurrency();
+      localStorage.setItem(charIGN, JSON.stringify(charLocalStorage));
     });
   } else {
     //Exits edit mode
