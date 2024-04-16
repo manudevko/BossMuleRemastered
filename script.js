@@ -183,7 +183,7 @@ const global = {
       Name: 'Will',
       Price: 441000000,
       IMG: './assets/will.webp',
-      Difficulty: 'Easy',
+      Difficulty: 'Hard',
     },
     VhillaN: {
       Name: 'VHilla',
@@ -625,7 +625,7 @@ const getCharIMGs = async () => {
       const charStorage = JSON.parse(localStorage.getItem(key));
       //Looping through all IMG HTML tags so we can match the IGNs and update the correct localstorage character.
       for (const char of charIMGs) {
-        const charIGN = char.nextElementSibling.textContent.split('IGN: ')[1];
+        const charIGN = char.nextElementSibling.innerText.split('IGN: ')[1];
         if (charStorage.charIGN === charIGN) {
           //Gets the char IMG from Nexon's website
           const response = await fetch(
@@ -794,12 +794,12 @@ const updatePartyMesos = () => {
       const partyValue = e.target.value;
       const partyValueAttribute = e.target.attributes.value;
       partyValueAttribute.value = partyValue;
-      const bossMesos = e.target.parentElement.parentElement.nextSibling;
+      const bossMesos = e.target.parentElement.parentElement.nextElementSibling;
       const bossDifficulty =
-        e.target.parentElement.parentElement.previousSibling.innerText;
+        e.target.parentElement.parentElement.previousElementSibling.innerText;
       const bossName =
-        e.target.parentElement.parentElement.previousSibling.previousSibling
-          .children[0].children[0].alt;
+        e.target.parentElement.parentElement.previousElementSibling
+          .previousElementSibling.children[0].children[0].alt;
 
       for (const boss of currentCharLocalStorage.bossesDefeated) {
         if (
@@ -841,7 +841,7 @@ const deleteCharacter = (target) => {
   if (confirmation) {
     //Gets char IGN from current target, adds back the crystals used by the character, deletes the character from localstorage and updates the DOM.
     const charIGN =
-      target.currentTarget.parentElement.children[0].textContent.split(
+      target.currentTarget.parentElement.children[0].innerText.split(
         'IGN: '
       )[1];
     const charLocalStorage = JSON.parse(localStorage.getItem(charIGN));
@@ -860,7 +860,8 @@ const deleteBossFromEditMode = (
   event,
   charIGN,
   charLocalStorage,
-  charLocalStorageHTML
+  charLocalStorageHTML,
+  selectBoss
 ) => {
   let localStorageCrystals = JSON.parse(localStorage.getItem('Crystals'));
   //Boss name and difficulty being targeted
@@ -870,6 +871,14 @@ const deleteBossFromEditMode = (
   const bossDifficulty =
     event.currentTarget.parentElement.parentElement.children[1].children[0]
       .innerText;
+  const newSelectOption = document.createElement('option');
+  newSelectOption.setAttribute('value', `${bossName} - ${bossDifficulty}`);
+  newSelectOption.innerHTML = `${bossName} - ${
+    bossDifficulty[0].toUpperCase() +
+    bossDifficulty.substring(1, bossDifficulty.length).toLowerCase()
+  }`;
+  selectBoss.prepend(newSelectOption);
+  selectBoss.selectedIndex = 0;
   const totalMesosEditMode =
     event.currentTarget.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector(
       `#${charIGN}mesos`
@@ -896,6 +905,7 @@ const deleteBossFromEditMode = (
       children.parentElement.parentElement.parentElement.querySelector(
         `#${charIGN}mesos`
       );
+    console.log(children);
     if (
       bossName.toUpperCase() === bossNameLocalStorageHTML.toUpperCase() &&
       bossDifficulty.toUpperCase() ===
@@ -903,13 +913,14 @@ const deleteBossFromEditMode = (
     ) {
       //If we are deleting the last boss element from the table we have to remove the border-b from the previous sibling because
       //it is going to become the last element
-      if (!children.nextSibling) {
+      if (!children.nextElementSibling) {
         //checks if it's not only 1 boss
-        if (children.previousSibling) {
-          children.previousSibling.classList.remove('border-b');
+        if (children.previousElementSibling) {
+          children.previousElementSibling.classList.remove('border-b');
         }
       }
       //Removes the boss from the edit table
+      console.log(event.currentTarget.parentElement.parentElement);
       event.currentTarget.parentElement.parentElement.remove();
       //Removes the boss from the ORIGINAL localstorage HTML
       children.remove();
@@ -935,10 +946,9 @@ const deleteBossFromEditMode = (
 //Function that handles char edition
 
 const editCharacter = (target) => {
-  let localStorageCrystals = JSON.parse(localStorage.getItem('Crystals'));
   const targetButton = target.currentTarget;
   const charIGN =
-    target.currentTarget.parentElement.children[1].children[0].textContent.split(
+    target.currentTarget.parentElement.children[1].children[0].innerText.split(
       'IGN: '
     )[1];
   const charLocalStorage = JSON.parse(localStorage.getItem(charIGN));
@@ -952,8 +962,8 @@ const editCharacter = (target) => {
     const bossName = charboss.name;
     const bossDifficulty = charboss.difficulty;
     const bossIMG = charboss.IMG;
-    const trHTML = document.createElement('tr');
-    trHTML.innerHTML = `<tr class="bg-custom-gray py-8 flex justify-between items-center font-medium border-gray-600">
+    const editTRHTML = document.createElement('tr');
+    editTRHTML.innerHTML = `<tr class="bg-custom-gray py-8 flex justify-between items-center font-medium border-gray-600">
     <td>
        <div class="w-100px"><img src=${bossIMG} alt=${bossName} class="h-12 border rounded border-gray-500 mx-auto"></div>
     </td>
@@ -964,7 +974,7 @@ const editCharacter = (target) => {
      <div class="bg-red-500 py-1 px-3 rounded w-100px cursor-pointer delete-boss">Delete</div>
     </td>
  </tr>`;
-    editBossTrs.push(trHTML);
+    editBossTrs.push(editTRHTML);
   });
 
   if (!global.editing) {
@@ -974,8 +984,8 @@ const editCharacter = (target) => {
     charLocalBosses.forEach((localBoss) => {
       bossList.forEach(([key, boss]) => {
         if (
-          localBoss.name === boss.Name &&
-          localBoss.difficulty === boss.Difficulty
+          localBoss.name.toUpperCase() === boss.Name.toUpperCase() &&
+          localBoss.difficulty.toUpperCase() === boss.Difficulty.toUpperCase()
         ) {
           bossList.splice(key, 1);
         }
@@ -991,7 +1001,7 @@ const editCharacter = (target) => {
       option.innerHTML = `${boss.Name} - ${boss.Difficulty}`;
       selectBoss.appendChild(option);
     });
-    addBossBtn.textContent = 'Add new boss';
+    addBossBtn.innerText = 'Add new boss';
     selectBoss.classList.add(
       'bg-custom-gray',
       'rounded',
@@ -1021,7 +1031,7 @@ const editCharacter = (target) => {
       targetButton.nextElementSibling
     );
     //Edit button changes
-    targetButton.children[1].textContent = 'Done';
+    targetButton.children[1].innerText = 'Done';
     targetButton.children[0].classList.add('hidden');
     targetButton.classList.remove('bg-blue-500');
     targetButton.classList.add('bg-green-500');
@@ -1044,7 +1054,8 @@ const editCharacter = (target) => {
           e,
           charIGN,
           charLocalStorage,
-          charLocalStorageHTML
+          charLocalStorageHTML,
+          selectBoss
         )
       );
       //Adds the boss badge style & appends to boss table DOM HTML
@@ -1053,19 +1064,27 @@ const editCharacter = (target) => {
       charDOMHTML.children[1].children[0].appendChild(bossTr);
     });
     addBossBtn.addEventListener('click', function (e) {
+      let localStorageCrystals = JSON.parse(localStorage.getItem('Crystals'));
       const bossName = selectBoss.value.split('-')[0].trim();
       const bossDifficulty = selectBoss.value.split('-')[1].trim();
       let bossIMG = '';
       let bossMesos = 0;
+      const charTotalMesosEdit = charDOMHTML.querySelector(`#${charIGN}mesos`);
+      const charTotalMesosReal = charLocalStorageHTML.querySelector(
+        `#${charIGN}mesos`
+      );
       bossList.forEach(([key, boss]) => {
-        if (bossName === boss.Name && bossDifficulty === boss.Difficulty) {
+        if (
+          bossName.toUpperCase() === boss.Name.toUpperCase() &&
+          bossDifficulty.toUpperCase() === boss.Difficulty.toUpperCase()
+        ) {
           bossIMG = boss.IMG;
           bossMesos = boss.Price;
         }
       });
       const newBossTR = document.createElement('tr');
-      const trHTML = document.createElement('tr');
-      trHTML.innerHTML = `<tr class="bg-custom-gray py-8 flex justify-between items-center font-medium border-gray-600">
+      const editTRHTML = document.createElement('tr');
+      editTRHTML.innerHTML = `<tr class="bg-custom-gray py-8 flex justify-between items-center font-medium border-gray-600">
         <td>
           <div class="w-100px"><img src=${bossIMG} alt=${bossName} class="h-12 border rounded border-gray-500 mx-auto"></div>
         </td>
@@ -1076,22 +1095,21 @@ const editCharacter = (target) => {
         <div class="bg-red-500 py-1 px-3 rounded w-100px cursor-pointer delete-boss">Delete</div>
         </td>
       </tr>`;
-      const bossDeleteButton = trHTML.children[2].children[0];
+      const bossDeleteButton = editTRHTML.children[2].children[0];
       //Adds event listener to each boss delete button
       bossDeleteButton.addEventListener('click', (e) =>
         deleteBossFromEditMode(
           e,
           charIGN,
           charLocalStorage,
-          charLocalStorageHTML
+          charLocalStorageHTML,
+          selectBoss
         )
       );
       //Adds the boss badge style & appends to boss table DOM HTML
-      addBossBadge(trHTML.children[1].children[0], 'boss');
-      trHTML.classList.add('py-2');
-      charDOMHTML.children[1].children[0].appendChild(trHTML);
-      //Removes the added boss from the selection list
-      selectBoss.remove(selectBoss.selectedIndex);
+      addBossBadge(editTRHTML.children[1].children[0], 'boss');
+      editTRHTML.classList.add('py-2');
+      charDOMHTML.children[1].children[0].appendChild(editTRHTML);
       //Add boss to localstorage and update mesos and crystals as well as the main HTML
       charLocalStorage.bossesDefeated.push({
         name: bossName,
@@ -1103,10 +1121,10 @@ const editCharacter = (target) => {
       const charBossTableLocalStorage =
         charLocalStorageHTML.children[0].children[1].children[1];
       newBossTR.innerHTML = `<tr class="bg-custom-gray py-8 flex justify-between items-center font-medium border-b border-gray-600">
-        <td><div class="w-100px"><img src="" alt="" class="h-12 border rounded border-gray-500 mx-auto"></div></td>
-        <td><div class="w-100px"></div></td>
+        <td><div class="w-100px"><img src='${bossIMG}' alt="${bossName}" class="h-12 border rounded border-gray-500 mx-auto"></div></td>
+        <td><div class="w-100px">${bossDifficulty}</div></td>
         <td><div class="w-100px"><input class="party-input w-1/2 bg-gray-700 text-center text-white font-bold rounded" type="number" min="1" max="6" value="1"></div></td>
-        <td><div class="w-100px"></div></td>
+        <td><div class="w-100px">${bossMesos}</div></td>
       </tr>`;
       newBossTR.classList.add(
         'bg-custom-gray',
@@ -1116,17 +1134,24 @@ const editCharacter = (target) => {
         'items-center',
         'font-medium'
       );
-      charBossTableLocalStorage.lastElementChild.classList.add(
-        'border-b',
-        'border-gray-600'
-      );
-
-      newBossTR.children[0].children[0].children[0].src = bossIMG;
-      newBossTR.children[1].children[0].textContent = bossDifficulty;
+      if (charBossTableLocalStorage.lastElementChild) {
+        charBossTableLocalStorage.lastElementChild.classList.add(
+          'border-b',
+          'border-gray-600'
+        );
+      }
       addBossBadge(newBossTR.children[1].children[0], 'boss');
-      newBossTR.children[3].children[0].textContent =
-        bossMesos.toLocaleString('en-US');
       charBossTableLocalStorage.appendChild(newBossTR);
+      //Updates localstorage chartotalmesos
+      charLocalStorage.charTotalMesos += bossMesos;
+      //Updates the EDIT mode total mesos
+      charTotalMesosEdit.innerText = `Mesos generated: ${charLocalStorage.charTotalMesos.toLocaleString(
+        'en-US'
+      )}`;
+      //Updates the ORIGINAL localstorage total mesos
+      charTotalMesosReal.innerText = `Mesos generated: ${charLocalStorage.charTotalMesos.toLocaleString(
+        'en-US'
+      )}`;
       charLocalStorage.charHTML = charLocalStorageHTML.children[0].outerHTML;
       localStorageCrystals--;
       localStorage.setItem('Crystals', JSON.stringify(localStorageCrystals));
@@ -1135,12 +1160,14 @@ const editCharacter = (target) => {
       )}`;
       updateCurrency();
       localStorage.setItem(charIGN, JSON.stringify(charLocalStorage));
+      //Removes the added boss from the selection list
+      selectBoss.remove(selectBoss.selectedIndex);
     });
   } else {
     //Exits edit mode
     const confirmation = confirm('Are you done editing?');
     if (confirmation) {
-      targetButton.children[1].textContent = 'Edit character';
+      targetButton.children[1].innerText = 'Edit character';
       targetButton.children[0].classList.remove('hidden');
       targetButton.classList.remove('bg-green-500');
       targetButton.classList.add('bg-blue-500');
