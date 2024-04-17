@@ -1084,7 +1084,7 @@ const editCharacter = (target) => {
       const charTotalMesosReal = charLocalStorageHTML.querySelector(
         `#${charIGN}mesos`
       );
-      bossList.forEach(([key, boss]) => {
+      bossList.forEach((boss) => {
         if (
           bossName.toUpperCase() === boss.Name.toUpperCase() &&
           bossDifficulty.toUpperCase() === boss.Difficulty.toUpperCase()
