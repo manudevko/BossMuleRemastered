@@ -466,8 +466,6 @@ const createChar = (charName, bossesDefeated) => {
     cont++;
     if (global.availableCrystals > 0) {
       totalCharMesosGenerated += bossesDefeated[boss]['Price'];
-      //Updating crystals
-      global.availableCrystals--;
       if (cont === bossCount) {
         borderBottom = false;
       }
@@ -477,6 +475,13 @@ const createChar = (charName, bossesDefeated) => {
         bossTBody,
         borderBottom
       );
+      //Updating crystals
+      global.availableCrystals--;
+    } else {
+      alert(
+        'You are trying to sell more than 180 crystals, please check your input'
+      );
+      return;
     }
     charInfo.bossesDefeated.push({
       name: bossesDefeated[boss]['Name'],
@@ -905,7 +910,6 @@ const deleteBossFromEditMode = (
       children.parentElement.parentElement.parentElement.querySelector(
         `#${charIGN}mesos`
       );
-    console.log(children);
     if (
       bossName.toUpperCase() === bossNameLocalStorageHTML.toUpperCase() &&
       bossDifficulty.toUpperCase() ===
@@ -920,7 +924,6 @@ const deleteBossFromEditMode = (
         }
       }
       //Removes the boss from the edit table
-      console.log(event.currentTarget.parentElement.parentElement);
       event.currentTarget.parentElement.parentElement.remove();
       //Removes the boss from the ORIGINAL localstorage HTML
       children.remove();
@@ -957,6 +960,7 @@ const editCharacter = (target) => {
   const charDOMHTML = target.currentTarget.parentElement.parentElement;
   const charLocalBosses = charLocalStorage.bossesDefeated;
   const editBossTrs = [];
+  const selectBoss = document.createElement('select');
 
   charLocalBosses.forEach((charboss) => {
     const bossName = charboss.name;
@@ -980,22 +984,29 @@ const editCharacter = (target) => {
   if (!global.editing) {
     //Edit mode
     //Checking which bosses are not added yet
-    const bossList = Object.entries(global.bosses);
-    charLocalBosses.forEach((localBoss) => {
-      bossList.forEach(([key, boss]) => {
+    const bossList = Object.values(global.bosses);
+    const filteredBoss = [...bossList];
+    /*This counter is needed because with the splice method the index of the removed boss keeps changing as we remove a new boss
+    So we use this counter to increase it by 1 everytime we get rid of a boss to be able to splice the correct 
+    index from the next removed boss*/
+    let counter = 0;
+    for (let i = 0; i < bossList.length; i++) {
+      for (let j = 0; j < charLocalBosses.length; j++) {
         if (
-          localBoss.name.toUpperCase() === boss.Name.toUpperCase() &&
-          localBoss.difficulty.toUpperCase() === boss.Difficulty.toUpperCase()
+          bossList[i].Name.toUpperCase() ===
+            charLocalBosses[j].name.toUpperCase() &&
+          bossList[i].Difficulty.toUpperCase() ===
+            charLocalBosses[j].difficulty.toUpperCase()
         ) {
-          bossList.splice(key, 1);
+          filteredBoss.splice(i - counter, 1);
+          counter++;
         }
-      });
-    });
+      }
+    }
     //Add boss btn and select input
     const groupedAddBoss = document.createElement('div');
     const addBossBtn = document.createElement('div');
-    const selectBoss = document.createElement('select');
-    bossList.forEach(([key, boss]) => {
+    filteredBoss.forEach((boss) => {
       const option = document.createElement('option');
       option.setAttribute('value', `${boss.Name} - ${boss.Difficulty}`);
       option.innerHTML = `${boss.Name} - ${boss.Difficulty}`;
@@ -1124,7 +1135,7 @@ const editCharacter = (target) => {
         <td><div class="w-100px"><img src='${bossIMG}' alt="${bossName}" class="h-12 border rounded border-gray-500 mx-auto"></div></td>
         <td><div class="w-100px">${bossDifficulty}</div></td>
         <td><div class="w-100px"><input class="party-input w-1/2 bg-gray-700 text-center text-white font-bold rounded" type="number" min="1" max="6" value="1"></div></td>
-        <td><div class="w-100px">${bossMesos}</div></td>
+        <td><div class="w-100px">${bossMesos.toLocaleString('en-US')}</div></td>
       </tr>`;
       newBossTR.classList.add(
         'bg-custom-gray',
@@ -1176,6 +1187,7 @@ const editCharacter = (target) => {
 
       //Go back to before
       global.DOM.charactersSection.innerHTML = '';
+      selectBoss.innerHTML = '';
       getLocalStorage();
       appRender();
     }
