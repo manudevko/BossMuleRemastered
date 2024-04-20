@@ -663,7 +663,6 @@ const addBossBadge = (bossTag, type) => {
   switch (bossTagText.toUpperCase()) {
     case 'EASY':
       bossTag.classList.add(
-        'text-xs',
         'bg-gray-500',
         'py-1',
         'px-3',
@@ -672,7 +671,6 @@ const addBossBadge = (bossTag, type) => {
       break;
     case 'NORMAL':
       bossTag.classList.add(
-        'text-xs',
         'bg-cyan-500',
         'py-1',
         'px-3',
@@ -681,7 +679,6 @@ const addBossBadge = (bossTag, type) => {
       break;
     case 'HARD':
       bossTag.classList.add(
-        'text-xs',
         'bg-pink-600',
         'py-1',
         'px-3',
@@ -690,7 +687,6 @@ const addBossBadge = (bossTag, type) => {
       break;
     case 'CHAOS':
       bossTag.classList.add(
-        'text-xs',
         'bg-gray-900',
         'py-1',
         'px-3',
@@ -700,7 +696,6 @@ const addBossBadge = (bossTag, type) => {
       break;
     case 'EXTREME':
       bossTag.classList.add(
-        'text-xs',
         'bg-gray-900',
         'py-1',
         'px-3',
