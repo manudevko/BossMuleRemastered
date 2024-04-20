@@ -6,6 +6,9 @@ module.exports = {
       colors: {
         'custom-gray': '#262b36',
       },
+      fontSize: {
+        xsm: '0.6rem',
+      },
     },
   },
   plugins: [],
