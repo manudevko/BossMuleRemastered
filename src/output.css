@@ -672,6 +672,11 @@ video {
   max-height: 24rem;
 }
 
+.max-h-max {
+  max-height: -moz-max-content;
+  max-height: max-content;
+}
+
 .w-1\/2 {
   width: 50%;
 }
