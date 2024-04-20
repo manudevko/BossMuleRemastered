@@ -700,8 +700,8 @@ video {
   width: 250px;
 }
 
-.w-\[95\%\] {
-  width: 95%;
+.w-\[90\%\] {
+  width: 90%;
 }
 
 .w-full {
@@ -715,10 +715,6 @@ video {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-\[90\%\] {
-  width: 90%;
 }
 
 .-translate-x-1\/2 {
@@ -1259,19 +1255,6 @@ thead th {
 
   .xl\:w-24 {
     width: 6rem;
-  }
-
-  .xl\:w-full {
-    width: 100%;
-  }
-
-  .xl\:w-auto {
-    width: auto;
-  }
-
-  .xl\:w-max {
-    width: -moz-max-content;
-    width: max-content;
   }
 
   .xl\:pl-20 {
